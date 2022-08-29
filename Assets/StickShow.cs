@@ -63,7 +63,7 @@ sealed class StickShow : MonoBehaviour
 
     Color GetColor(float x, float z)
     {
-        return new Color(math.frac(x * 0.9f), math.frac(z * 0.9f), 1, 1);
+        return new Color(math.frac(x * 0.9f), math.frac(z * 0.9f), 1, 1) * 20;
     }
 
     void Update()
