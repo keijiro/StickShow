@@ -1,7 +1,9 @@
 using UnityEngine;
 using Unity.Mathematics;
 using Unity.Collections;
+using Unity.Burst;
 
+[BurstCompile]
 sealed class StickShow : MonoBehaviour
 {
     [SerializeField] Mesh _mesh = null;
@@ -44,21 +46,21 @@ sealed class StickShow : MonoBehaviour
         _colorBuffer.Dispose();
     }
 
-    float4x4 GetStickMatrix(float x, float z)
+    [BurstCompile]
+    static void GetStickMatrix(float x, float z, float phase, in float3 scale, out float4x4 matrix)
     {
-        var phase = 2 * math.PI * _swingFrequency * Time.time;
         var ntime = Time.time * 0.234f;
         var nvalue1 = noise.snoise(math.float3(x, ntime, z));
         var nvalue2 = noise.snoise(math.float3(x, ntime + 100, z));
         var angle = math.cos(phase + nvalue1);
         var origin = math.float3(x, 0, z);
-        var offset = math.float3(0, _meshScale.y * 2, 0);
+        var offset = math.float3(0, scale.y * 1.5f, 0);
         var axis = math.normalize(math.float3(nvalue2, 0, 1));
         var m1 = float4x4.Translate(origin);
         var m2 = float4x4.AxisAngle(axis, angle);
         var m3 = float4x4.Translate(offset);
-        var m4 = float4x4.Scale(_meshScale);
-        return math.mul(math.mul(math.mul(m1, m2), m3), m4);
+        var m4 = float4x4.Scale(scale);
+        matrix = math.mul(math.mul(math.mul(m1, m2), m3), m4);
     }
 
     Color GetColor(float x, float z)
@@ -71,6 +73,8 @@ sealed class StickShow : MonoBehaviour
     void Update()
     {
         var offs = 0;
+
+        var phase = 2 * math.PI * _swingFrequency * Time.time;
 
         for (var sxi = 0; sxi < _squadCount.x; sxi++)
         {
@@ -86,7 +90,10 @@ sealed class StickShow : MonoBehaviour
                         x += (_personInterval.x * (_squadSize.x - 1) + _squadInterval.x) * (sxi - (_squadCount.x - 1) * 0.5f);
                         y += (_personInterval.y * (_squadSize.y - 1) + _squadInterval.y) * (syi - (_squadCount.y - 1) * 0.5f);
 
-                        _matrices[offs] = GetStickMatrix(x, y);
+                        float4x4 mtx;
+                        GetStickMatrix(x, y, phase, _meshScale, out mtx);
+
+                        _matrices[offs] = mtx;
                         _colors[offs] = GetColor(x, y);
 
                         offs++;
