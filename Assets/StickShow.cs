@@ -12,7 +12,7 @@ sealed class StickShow : MonoBehaviour
     [SerializeField] Vector2 _personInterval = new Vector2(1.0f, 1.5f);
     [Space]
     [SerializeField] Vector2Int _squadCount = new Vector2Int(4, 4);
-    [SerializeField] Vector2Int _squadInterval = new Vector2Int(2, 3);
+    [SerializeField] Vector2 _squadInterval = new Vector2(2, 3);
     [Space]
     [SerializeField] float _swingFrequency = 1.0f;
 
@@ -63,26 +63,28 @@ sealed class StickShow : MonoBehaviour
 
     Color GetColor(float x, float z)
     {
-        return new Color(math.frac(x * 0.9f), math.frac(z * 0.9f), 1, 1) * 20;
+        var r = math.frac(x * 0.9f) * 20;
+        var g = math.frac(z * 0.9f) * 20;
+        return new Color(r, g, 1, 1);
     }
 
     void Update()
     {
         var offs = 0;
 
-        for (var sx = 0; sx < _squadCount.x; sx++)
+        for (var sxi = 0; sxi < _squadCount.x; sxi++)
         {
-            for (var sy = 0; sy < _squadCount.y; sy++)
+            for (var syi = 0; syi < _squadCount.y; syi++)
             {
-                for (var px = 0; px < _squadSize.x; px++)
+                for (var pxi = 0; pxi < _squadSize.x; pxi++)
                 {
-                    for (var py = 0; py < _squadSize.y; py++)
+                    for (var pyi = 0; pyi < _squadSize.y; pyi++)
                     {
-                        var xi = sx * _squadSize.x + px;
-                        var yi = sy * _squadSize.y + py;
+                        var x = _personInterval.x * (pxi - (_squadSize.x - 1) * 0.5f);
+                        var y = _personInterval.y * (pyi - (_squadSize.y - 1) * 0.5f);
 
-                        var x = _personInterval.x * (xi - (_squadCount.x * _squadSize.x - 1) * 0.5f);
-                        var y = _personInterval.y * (yi - (_squadCount.y * _squadSize.y - 1) * 0.5f);
+                        x += (_personInterval.x * (_squadSize.x - 1) + _squadInterval.x) * (sxi - (_squadCount.x - 1) * 0.5f);
+                        y += (_personInterval.y * (_squadSize.y - 1) + _squadInterval.y) * (syi - (_squadCount.y - 1) * 0.5f);
 
                         _matrices[offs] = GetStickMatrix(x, y);
                         _colors[offs] = GetColor(x, y);
