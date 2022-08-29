@@ -188,7 +188,9 @@ MonoBehaviour:
   _meshScale: {x: 0.1, y: 0.25, z: 0.1}
   _material: {fileID: 2100000, guid: a122b1300a88b42a88ad3c1a7563852e, type: 2}
   _squadSize: {x: 8, y: 11}
-  _interval: {x: 1, y: 1.5}
+  _personInterval: {x: 1, y: 1.5}
+  _squadCount: {x: 4, y: 4}
+  _squadInterval: {x: 2, y: 3}
   _swingFrequency: 0.5
 --- !u!4 &1346416446
 Transform:

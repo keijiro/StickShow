@@ -9,7 +9,10 @@ sealed class StickShow : MonoBehaviour
     [SerializeField] Material _material = null;
     [Space]
     [SerializeField] Vector2Int _squadSize = new Vector2Int(8, 12);
-    [SerializeField] Vector2 _interval = new Vector2(1.0f, 1.5f);
+    [SerializeField] Vector2 _personInterval = new Vector2(1.0f, 1.5f);
+    [Space]
+    [SerializeField] Vector2Int _squadCount = new Vector2Int(4, 4);
+    [SerializeField] Vector2Int _squadInterval = new Vector2Int(2, 3);
     [Space]
     [SerializeField] float _swingFrequency = 1.0f;
 
@@ -19,16 +22,19 @@ sealed class StickShow : MonoBehaviour
 
     void Start()
     {
-        var instanceCount = _squadSize.x * _squadSize.y;
+        var icount = _squadSize.x * _squadSize.y *
+                     _squadCount.x * _squadCount.y;
 
         _matrices = new NativeArray<Matrix4x4>
-          (instanceCount, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+          (icount, Allocator.Persistent,
+           NativeArrayOptions.UninitializedMemory);
 
         _colors = new NativeArray<Color>
-          (instanceCount, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+          (icount, Allocator.Persistent,
+           NativeArrayOptions.UninitializedMemory);
 
         _colorBuffer = new GraphicsBuffer
-          (GraphicsBuffer.Target.Structured, instanceCount, sizeof(float) * 4);
+          (GraphicsBuffer.Target.Structured, icount, sizeof(float) * 4);
     }
 
     void OnDestroy()
@@ -62,16 +68,28 @@ sealed class StickShow : MonoBehaviour
 
     void Update()
     {
-        var mc = 0;
-        for (var i = 0; i < _squadSize.y; i++)
+        var offs = 0;
+
+        for (var sx = 0; sx < _squadCount.x; sx++)
         {
-            var z = _interval.y * (i - (_squadSize.y - 1) * 0.5f);
-            for (var j = 0; j < _squadSize.x; j++)
+            for (var sy = 0; sy < _squadCount.y; sy++)
             {
-                var x = _interval.x * (j - (_squadSize.x - 1) * 0.5f);
-                _matrices[mc] = GetStickMatrix(x, z);
-                _colors[mc] = GetColor(x, z);
-                mc++;
+                for (var px = 0; px < _squadSize.x; px++)
+                {
+                    for (var py = 0; py < _squadSize.y; py++)
+                    {
+                        var xi = sx * _squadSize.x + px;
+                        var yi = sy * _squadSize.y + py;
+
+                        var x = _personInterval.x * (xi - (_squadCount.x * _squadSize.x - 1) * 0.5f);
+                        var y = _personInterval.y * (yi - (_squadCount.y * _squadSize.y - 1) * 0.5f);
+
+                        _matrices[offs] = GetStickMatrix(x, y);
+                        _colors[offs] = GetColor(x, y);
+
+                        offs++;
+                    }
+                }
             }
         }
 
@@ -79,6 +97,16 @@ sealed class StickShow : MonoBehaviour
         _material.SetBuffer("_InstanceColorBuffer", _colorBuffer);
 
         var rparams = new RenderParams(_material);
-        Graphics.RenderMeshInstanced(rparams, _mesh, 0, _matrices, _matrices.Length);
+        var perDraw = _squadSize.x * _squadSize.y;
+        offs = 0;
+
+        for (var sx = 0; sx < _squadCount.x; sx++)
+        {
+            for (var sy = 0; sy < _squadCount.y; sy++)
+            {
+                Graphics.RenderMeshInstanced(rparams, _mesh, 0, _matrices, perDraw, offs);
+                offs += perDraw;
+            }
+        }
     }
 }
