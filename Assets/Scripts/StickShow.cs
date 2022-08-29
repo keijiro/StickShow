@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Profiling;
 using Unity.Collections;
 
 sealed class StickShow : MonoBehaviour
@@ -35,6 +36,8 @@ sealed class StickShow : MonoBehaviour
 
     void Update()
     {
+        Profiler.BeginSample("Stick Update");
+
         var i = 0;
 
         for (var sxi = 0; sxi < _config.squadCount.x; sxi++)
@@ -54,6 +57,8 @@ sealed class StickShow : MonoBehaviour
                 }
             }
         }
+
+        Profiler.EndSample();
 
         _colorBuffer.SetData(_colors);
         _material.SetBuffer("_InstanceColorBuffer", _colorBuffer);
