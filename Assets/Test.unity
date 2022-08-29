@@ -196,7 +196,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 341520289}
   m_LocalRotation: {x: 0.08694347, y: 0.06949102, z: -0.0060796794, w: 0.99376804}
-  m_LocalPosition: {x: 0, y: 2.5, z: -30}
+  m_LocalPosition: {x: 0, y: 1.1, z: -17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 1346416446}
   - component: {fileID: 1346416445}
   m_Layer: 0
-  m_Name: Squad
+  m_Name: Legion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -233,14 +233,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef4331bf4c74d465b83c55215e4bab56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
-  _meshScale: {x: 0.1, y: 0.25, z: 0.1}
+  _mesh: {fileID: -8670151273213183110, guid: e586bbc38f9da49b8a23c55fe2607bb8, type: 3}
   _material: {fileID: 2100000, guid: a122b1300a88b42a88ad3c1a7563852e, type: 2}
-  _squadSize: {x: 8, y: 11}
-  _personInterval: {x: 0.75, y: 1.5}
-  _squadCount: {x: 7, y: 3}
-  _squadInterval: {x: 1.5, y: 2}
-  _swingFrequency: 0.5
+  _config:
+    squadSize: {x: 8, y: 12}
+    seatInterval: {x: 0.5, y: 0.9}
+    squadCount: {x: 7, y: 3}
+    squadInterval: {x: 0.8, y: 1.2}
+    swingFrequency: 0.5
+    swingOffset: 0.2
 --- !u!4 &1346416446
 Transform:
   m_ObjectHideFlags: 0
@@ -266,7 +267,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1688293772}
   - component: {fileID: 1688293771}
-  - component: {fileID: 1688293770}
   - component: {fileID: 1688293769}
   m_Layer: 0
   m_Name: Camera
@@ -308,14 +308,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!81 &1688293770
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1688293768}
-  m_Enabled: 1
 --- !u!20 &1688293771
 Camera:
   m_ObjectHideFlags: 0
