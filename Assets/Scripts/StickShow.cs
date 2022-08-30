@@ -18,6 +18,7 @@ sealed class StickShow : MonoBehaviour
     NativeArray<Matrix4x4> _matrices;
     NativeArray<Color> _colors;
     GraphicsBuffer _colorBuffer;
+    MaterialPropertyBlock _matProps;
 
     #endregion
 
@@ -36,6 +37,8 @@ sealed class StickShow : MonoBehaviour
         _colorBuffer = new GraphicsBuffer
           (GraphicsBuffer.Target.Structured,
            _legion.TotalSeatCount, sizeof(float) * 4);
+
+        _matProps = new MaterialPropertyBlock();
     }
 
     void OnDestroy()
@@ -59,12 +62,17 @@ sealed class StickShow : MonoBehaviour
         _colorBuffer.SetData(_colors);
         _material.SetBuffer("_InstanceColorBuffer", _colorBuffer);
 
-        var rparams = new RenderParams(_material);
+        var rparams = new RenderParams(_material) { matProps = _matProps };
         var (i, step) = (0, _legion.SquadSeatCount);
         for (var sx = 0; sx < _legion.squadCount.x; sx++)
+        {
             for (var sy = 0; sy < _legion.squadCount.y; sy++, i += step)
+            {
+                _matProps.SetInteger("_InstanceIDOffset", i);
                 Graphics.RenderMeshInstanced
                   (rparams, _mesh, 0, _matrices, step, i);
+            }
+        }
     }
 
     #endregion

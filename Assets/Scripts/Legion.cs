@@ -74,8 +74,13 @@ struct Legion
 
     public Color GetStickColor(float2 pos, float time)
     {
-        var hue = math.frac(math.sin(pos.x * 23.13f + pos.y * 134.782f) * 44.583f);
-        return Color.HSVToRGB(hue, 1, 30);
+        var rnd = math.dot(pos, math.float2(23.13f, 134.78f));
+        rnd = math.frac(math.sin(rnd) * 44.583f);
+        var hue = math.frac(rnd + time * 0.83f);
+        var br = math.distance(pos, math.float2(0, -16));
+        br = math.sin(br * 0.73f - time * 2.8f) * 0.5f + 0.5f;
+        br = br * br * 50 + 0.1f;
+        return Color.HSVToRGB(hue, 1, br);
     }
 
     #endregion
