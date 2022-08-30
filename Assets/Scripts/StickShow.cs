@@ -5,27 +5,37 @@ using Unity.Jobs;
 
 sealed class StickShow : MonoBehaviour
 {
+    #region Editable attributes
+
     [SerializeField] Mesh _mesh = null;
     [SerializeField] Material _material = null;
-    [SerializeField] Legion _config = Legion.Default();
+    [SerializeField] Legion _legion = Legion.Default();
+
+    #endregion
+
+    #region Private objects
 
     NativeArray<Matrix4x4> _matrices;
     NativeArray<Color> _colors;
     GraphicsBuffer _colorBuffer;
 
+    #endregion
+
+    #region MonoBehaviour implementation
+
     void Start()
     {
         _matrices = new NativeArray<Matrix4x4>
-          (_config.TotalInstanceCount, Allocator.Persistent,
+          (_legion.TotalSeatCount, Allocator.Persistent,
            NativeArrayOptions.UninitializedMemory);
 
         _colors = new NativeArray<Color>
-          (_config.TotalInstanceCount, Allocator.Persistent,
+          (_legion.TotalSeatCount, Allocator.Persistent,
            NativeArrayOptions.UninitializedMemory);
 
         _colorBuffer = new GraphicsBuffer
           (GraphicsBuffer.Target.Structured,
-           _config.TotalInstanceCount, sizeof(float) * 4);
+           _legion.TotalSeatCount, sizeof(float) * 4);
     }
 
     void OnDestroy()
@@ -40,10 +50,9 @@ sealed class StickShow : MonoBehaviour
         Profiler.BeginSample("Stick Update");
 
         var job = new LegionJob()
-          { matrices = _matrices, colors = _colors,
-            config = _config, time = Time.time };
-
-        job.Schedule(_config.TotalInstanceCount, 64).Complete();
+          { config = _legion, time = Time.time,
+            matrices = _matrices, colors = _colors };
+        job.Schedule(_legion.TotalSeatCount, 64).Complete();
 
         Profiler.EndSample();
 
@@ -51,12 +60,12 @@ sealed class StickShow : MonoBehaviour
         _material.SetBuffer("_InstanceColorBuffer", _colorBuffer);
 
         var rparams = new RenderParams(_material);
-        var perDraw = _config.SquadInstanceCount;
-        var i = 0;
-
-        for (var sx = 0; sx < _config.squadCount.x; sx++)
-            for (var sy = 0; sy < _config.squadCount.y; sy++, i += perDraw)
+        var (i, step) = (0, _legion.SquadSeatCount);
+        for (var sx = 0; sx < _legion.squadCount.x; sx++)
+            for (var sy = 0; sy < _legion.squadCount.y; sy++, i += step)
                 Graphics.RenderMeshInstanced
-                  (rparams, _mesh, 0, _matrices, perDraw, i);
+                  (rparams, _mesh, 0, _matrices, step, i);
     }
+
+    #endregion
 }
