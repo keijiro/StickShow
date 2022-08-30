@@ -62,6 +62,15 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "jp.keijiro.klak.motion": {
+      "version": "1.0.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.mathematics": "1.2.1"
+      },
+      "url": "https://registry.npmjs.com"
+    },
     "jp.keijiro.metamesh": {
       "version": "1.0.2",
       "depth": 0,

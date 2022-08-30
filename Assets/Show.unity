@@ -181,6 +181,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 341520290}
+  - component: {fileID: 341520291}
   m_Layer: 0
   m_Name: Camera Pivot
   m_TagString: Untagged
@@ -204,6 +205,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 10, y: 8, z: 0}
+--- !u!114 &341520291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 341520289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 543ddbe12367a4899b011d43ef41f357, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  positionAmount:
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  rotationAmount:
+    x: 10
+    y: 40
+    z: 20
+  frequency: 0.025
+  octaves: 3
+  seed: 58
 --- !u!1 &1346416444
 GameObject:
   m_ObjectHideFlags: 0
@@ -235,7 +259,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mesh: {fileID: -8670151273213183110, guid: e586bbc38f9da49b8a23c55fe2607bb8, type: 3}
   _material: {fileID: 2100000, guid: a122b1300a88b42a88ad3c1a7563852e, type: 2}
-  _config:
+  _legion:
     squadSize:
       x: 8
       y: 12
@@ -246,8 +270,8 @@ MonoBehaviour:
       x: 7
       y: 3
     squadInterval:
-      x: 0.7
-      y: 1.2
+      x: 1.2
+      y: 1.6
     swingFrequency: 0.5
     swingOffset: 0.3
 --- !u!4 &1346416446

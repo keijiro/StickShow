@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.unity.render-pipelines.universal": "12.1.7",
+    "jp.keijiro.klak.motion": "1.0.2",
     "jp.keijiro.metamesh": "1.0.2"
   },
   "scopedRegistries": [
