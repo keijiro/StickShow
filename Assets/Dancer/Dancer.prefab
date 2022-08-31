@@ -69,19 +69,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _footDistance: 0.3
-  _stepFrequency: 0.7
+  _stepFrequency: 0
   _stepHeight: 0.2
   _stepAngle: 120
   _maxDistance: 0.5
-  _hipHeight: 0.85
+  _hipHeight: 0.89
   _hipPositionNoise: 0.1
   _hipRotationNoise: 30
   _spineBend: -8
-  _spineRotationNoise: {x: 30, y: 20, z: 30}
+  _spineRotationNoise: {x: 20, y: 20, z: 20}
   _handPosition: {x: 0.3, y: 0.3, z: 0.3}
-  _handPositionNoise: {x: 0.3, y: 0.3, z: 0.3}
+  _handPositionNoise: {x: 0.2, y: 0.2, z: 0.2}
   _headMove: 5
-  _noiseFrequency: 0.8
+  _noiseFrequency: 0.4
   _randomSeed: 123
 --- !u!1 &1262453578131682
 GameObject:
