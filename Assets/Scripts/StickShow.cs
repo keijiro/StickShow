@@ -53,8 +53,8 @@ sealed class StickShow : MonoBehaviour
         Profiler.BeginSample("Stick Update");
 
         var job = new LegionJob()
-          { config = _legion, time = Time.time,
-            matrices = _matrices, colors = _colors };
+          { config = _legion, xform = transform.localToWorldMatrix,
+            time = Time.time, matrices = _matrices, colors = _colors };
         job.Schedule(_legion.TotalSeatCount, 64).Complete();
 
         Profiler.EndSample();

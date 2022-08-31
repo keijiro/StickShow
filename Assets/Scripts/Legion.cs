@@ -58,7 +58,8 @@ struct Legion
 
     #region Stick animation
 
-    public float4x4 GetStickMatrix(float2 pos, float time, uint seed)
+    public float4x4 GetStickMatrix
+      (float2 pos, float4x4 xform, float time, uint seed)
     {
         var rand = new Random(seed);
         rand.NextUInt4();
@@ -89,7 +90,7 @@ struct Legion
         var m1 = float4x4.Translate(origin);
         var m2 = float4x4.AxisAngle(axis, angle);
         var m3 = float4x4.Translate(math.float3(0, offset, 0));
-        return math.mul(math.mul(m1, m2), m3);
+        return math.mul(math.mul(math.mul(xform, m1), m2), m3);
     }
 
     public Color GetStickColor(float2 pos, float time, uint seed)
@@ -98,7 +99,7 @@ struct Legion
         rand.NextUInt4();
 
         // Wave animation
-        var wave = math.distance(pos, math.float2(0, -16));
+        var wave = math.distance(pos, math.float2(0, 16));
         wave = math.sin(wave * 0.53f - time * 2.8f) * 0.5f + 0.5f;
 
         // Hue / brightness
@@ -116,6 +117,7 @@ struct LegionJob : IJobParallelFor
 {
     // Input
     public Legion config;
+    public Matrix4x4 xform;
     public float time;
 
     // Output
@@ -127,7 +129,7 @@ struct LegionJob : IJobParallelFor
         var (squad, seat) = config.GetCoordinatesFromIndex(i);
         var pos = config.GetPositionOnPlane(squad, seat);
         var seed = (uint)i * 2u + 123u;
-        matrices[i] = config.GetStickMatrix(pos, time, seed++);
+        matrices[i] = config.GetStickMatrix(pos, xform, time, seed++);
         colors[i] = config.GetStickColor(pos, time, seed++);
     }
 }
