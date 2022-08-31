@@ -3,14 +3,14 @@
 StructuredBuffer<float4> _InstanceColorBuffer;
 uint _InstanceIDOffset;
 
-void GetInstanceColor_float(float id, out float4 color)
+void GetInstanceColor_float(out float4 color)
 {
-    color = _InstanceColorBuffer[(uint)id + _InstanceIDOffset];
+    color = _InstanceColorBuffer[unity_InstanceID + _InstanceIDOffset];
 }
 
 #else
 
-void GetInstanceColor_float(float id, out float4 color)
+void GetInstanceColor_float(out float4 color)
 {
     color = float4(1, 0, 0, 1);
 }
