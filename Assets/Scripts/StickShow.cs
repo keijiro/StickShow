@@ -9,7 +9,7 @@ sealed class StickShow : MonoBehaviour
 
     [SerializeField] Mesh _mesh = null;
     [SerializeField] Material _material = null;
-    [SerializeField] Legion _legion = Legion.Default();
+    [SerializeField] Audience _audience = Audience.Default();
 
     #endregion
 
@@ -27,16 +27,16 @@ sealed class StickShow : MonoBehaviour
     void Start()
     {
         _matrices = new NativeArray<Matrix4x4>
-          (_legion.TotalSeatCount, Allocator.Persistent,
+          (_audience.TotalSeatCount, Allocator.Persistent,
            NativeArrayOptions.UninitializedMemory);
 
         _colors = new NativeArray<Color>
-          (_legion.TotalSeatCount, Allocator.Persistent,
+          (_audience.TotalSeatCount, Allocator.Persistent,
            NativeArrayOptions.UninitializedMemory);
 
         _colorBuffer = new GraphicsBuffer
           (GraphicsBuffer.Target.Structured,
-           _legion.TotalSeatCount, sizeof(float) * 4);
+           _audience.TotalSeatCount, sizeof(float) * 4);
 
         _matProps = new MaterialPropertyBlock();
     }
@@ -52,10 +52,10 @@ sealed class StickShow : MonoBehaviour
     {
         Profiler.BeginSample("Stick Update");
 
-        var job = new LegionJob()
-          { config = _legion, xform = transform.localToWorldMatrix,
+        var job = new AudienceAnimationJob()
+          { config = _audience, xform = transform.localToWorldMatrix,
             time = Time.time, matrices = _matrices, colors = _colors };
-        job.Schedule(_legion.TotalSeatCount, 64).Complete();
+        job.Schedule(_audience.TotalSeatCount, 64).Complete();
 
         Profiler.EndSample();
 
@@ -63,10 +63,10 @@ sealed class StickShow : MonoBehaviour
         _material.SetBuffer("_InstanceColorBuffer", _colorBuffer);
 
         var rparams = new RenderParams(_material) { matProps = _matProps };
-        var (i, step) = (0, _legion.SquadSeatCount);
-        for (var sx = 0; sx < _legion.squadCount.x; sx++)
+        var (i, step) = (0, _audience.BlockSeatCount);
+        for (var sx = 0; sx < _audience.blockCount.x; sx++)
         {
-            for (var sy = 0; sy < _legion.squadCount.y; sy++, i += step)
+            for (var sy = 0; sy < _audience.blockCount.y; sy++, i += step)
             {
                 _matProps.SetInteger("_InstanceIDOffset", i);
                 Graphics.RenderMeshInstanced

@@ -6,25 +6,25 @@ using Unity.Mathematics;
 using Random = Unity.Mathematics.Random;
 
 [System.Serializable]
-struct Legion
+struct Audience
 {
     #region Editable attributes
 
-    public int2 squadSize;
-    public float2 seatInterval;
+    public int2 seatPerBlock;
+    public float2 seatPitch;
     [Space]
-    public int2 squadCount;
-    public float2 squadInterval;
+    public int2 blockCount;
+    public float2 aisleWidth;
     [Space]
     public float swingFrequency;
     public float swingOffset;
 
-    public static Legion Default()
-      => new Legion()
-        { squadSize = math.int2(8, 12),
-          seatInterval = math.float2(0.4f, 0.8f),
-          squadCount = math.int2(7, 3),
-          squadInterval = math.float2(0.7f, 1.2f),
+    public static Audience Default()
+      => new Audience()
+        { seatPerBlock = math.int2(8, 12),
+          seatPitch = math.float2(0.4f, 0.8f),
+          blockCount = math.int2(7, 3),
+          aisleWidth = math.float2(0.7f, 1.2f),
           swingFrequency = 0.5f,
           swingOffset = 0.3f };
 
@@ -32,27 +32,27 @@ struct Legion
 
     #region Helper functions
 
-    public int SquadSeatCount
-      => squadSize.x * squadSize.y;
+    public int BlockSeatCount
+      => seatPerBlock.x * seatPerBlock.y;
 
     public int TotalSeatCount
-      => squadSize.x * squadSize.y * squadCount.x * squadCount.y;
+      => seatPerBlock.x * seatPerBlock.y * blockCount.x * blockCount.y;
 
-    public (int2 squad, int2 seat) GetCoordinatesFromIndex(int i)
+    public (int2 block, int2 seat) GetCoordinatesFromIndex(int i)
     {
-        var si = i / SquadSeatCount;
-        var pi = i - SquadSeatCount * si;
-        var sy = si / squadCount.x;
-        var sx = si - squadCount.x * sy;
-        var py = pi / squadSize.x;
-        var px = pi - squadSize.x * py;
+        var si = i / BlockSeatCount;
+        var pi = i - BlockSeatCount * si;
+        var sy = si / blockCount.x;
+        var sx = si - blockCount.x * sy;
+        var py = pi / seatPerBlock.x;
+        var px = pi - seatPerBlock.x * py;
         return (math.int2(sx, sy), math.int2(px, py));
     }
 
-    public float2 GetPositionOnPlane(int2 squad, int2 seat)
-      => seatInterval * (seat - (float2)(squadSize - 1) * 0.5f)
-          + (seatInterval * (squadSize - 1) + squadInterval)
-            * (squad - (float2)(squadCount - 1) * 0.5f);
+    public float2 GetPositionOnPlane(int2 block, int2 seat)
+      => seatPitch * (seat - (float2)(seatPerBlock - 1) * 0.5f)
+          + (seatPitch * (seatPerBlock - 1) + aisleWidth)
+            * (block - (float2)(blockCount - 1) * 0.5f);
 
     #endregion
 
@@ -70,7 +70,7 @@ struct Legion
 
         // Animation origin (shoulder position)
         var origin = float3.zero;
-        origin.xz = pos + rand.NextFloat2(-0.3f, 0.3f) * seatInterval;
+        origin.xz = pos + rand.NextFloat2(-0.3f, 0.3f) * seatPitch;
         origin.y = rand.NextFloat(-0.2f, 0.2f);
 
         // Swing angle
@@ -113,10 +113,10 @@ struct Legion
 }
 
 [BurstCompile]
-struct LegionJob : IJobParallelFor
+struct AudienceAnimationJob : IJobParallelFor
 {
     // Input
-    public Legion config;
+    public Audience config;
     public Matrix4x4 xform;
     public float time;
 
@@ -126,8 +126,8 @@ struct LegionJob : IJobParallelFor
 
     public void Execute(int i)
     {
-        var (squad, seat) = config.GetCoordinatesFromIndex(i);
-        var pos = config.GetPositionOnPlane(squad, seat);
+        var (block, seat) = config.GetCoordinatesFromIndex(i);
+        var pos = config.GetPositionOnPlane(block, seat);
         var seed = (uint)i * 2u + 123u;
         matrices[i] = config.GetStickMatrix(pos, xform, time, seed++);
         colors[i] = config.GetStickColor(pos, time, seed++);
