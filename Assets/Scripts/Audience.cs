@@ -66,7 +66,8 @@ struct Audience
 
         // Cyclic animation phase parameter
         var phase = 2 * math.PI * swingFrequency * time;
-        phase += noise.snoise(math.float3(pos, time * 0.57f));
+        var nr1 = rand.NextFloat(-1000, 1000);
+        phase += noise.snoise(math.float2(nr1, time * 0.27f));
 
         // Animation origin (shoulder position)
         var origin = float3.zero;
@@ -80,7 +81,8 @@ struct Audience
         angle *= rand.NextFloat(0.3f, 1.0f);
 
         // Swing axis
-        var dx = noise.snoise(math.float3(pos.yx, time * 0.23f + 100));
+        var nr2 = rand.NextFloat(-1000, 1000);
+        var dx = noise.snoise(math.float2(nr2, time * 0.23f + 100));
         var axis = math.normalize(math.float3(dx, 0, 1));
 
         // Stick offset (arm length)
