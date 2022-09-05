@@ -61,6 +61,74 @@ struct Audience
     public float4x4 GetStickMatrix
       (float2 pos, float4x4 xform, float time, uint seed)
     {
+        /*
+        var angle = math.cos(2 * math.PI * swingFrequency * time);
+        var m1 = float4x4.Translate(math.float3(pos.x, 0, pos.y));
+        var m2 = float4x4.AxisAngle(math.float3(0, 0, 1), angle);
+        return math.mul(xform, math.mul(m1, m2));
+        */
+
+        /*
+        var angle = math.cos(2 * math.PI * swingFrequency * time);
+        var m1 = float4x4.Translate(math.float3(pos.x, 0, pos.y));
+        var m2 = float4x4.AxisAngle(math.float3(0, 0, 1), angle);
+        var m3 = float4x4.Translate(math.float3(0, swingOffset, 0));
+        return math.mul(math.mul(math.mul(xform, m1), m2), m3);
+        */
+
+        /*
+        var rand = new Random(seed); rand.NextUInt4();
+
+        var r1 = rand.NextFloat(-1000, 1000);
+        var n1 = noise.snoise(math.float2(r1, time * 0.3f));
+        var angle = math.cos(2 * math.PI * swingFrequency * time + n1);
+
+        var m1 = float4x4.Translate(math.float3(pos.x, 0, pos.y));
+        var m2 = float4x4.AxisAngle(math.float3(0, 0, 1), angle);
+        var m3 = float4x4.Translate(math.float3(0, swingOffset, 0));
+        return math.mul(math.mul(math.mul(xform, m1), m2), m3);
+        */
+
+        /*
+        var rand = new Random(seed); rand.NextUInt4();
+
+        var r1 = rand.NextFloat(-1000, 1000);
+        var n1 = noise.snoise(math.float2(r1, time * 0.3f));
+        var angle = math.cos(2 * math.PI * swingFrequency * time + n1);
+
+        var r2 = rand.NextFloat(-1000, 1000);
+        var n2 = noise.snoise(math.float2(r2, time * 0.3f));
+        var axis = math.normalize(math.float3(n2, 0, 1));
+
+        var m1 = float4x4.Translate(math.float3(pos.x, 0, pos.y));
+        var m2 = float4x4.AxisAngle(axis, angle);
+        var m3 = float4x4.Translate(math.float3(0, swingOffset, 0));
+        return math.mul(math.mul(math.mul(xform, m1), m2), m3);
+        */
+
+        var rand = new Random(seed); rand.NextUInt4();
+
+        var origin = float3.zero;
+        origin.xz = pos + rand.NextFloat2(-0.3f, 0.3f) * seatPitch;
+        origin.y = rand.NextFloat(-0.2f, 0.2f);
+
+        var r1 = rand.NextFloat(-1000, 1000);
+        var n1 = noise.snoise(math.float2(r1, time * 0.3f));
+        var angle = math.cos(2 * math.PI * swingFrequency * time + n1);
+        angle *= rand.NextFloat(0.5f, 1.0f);
+
+        var r2 = rand.NextFloat(-1000, 1000);
+        var n2 = noise.snoise(math.float2(r2, time * 0.3f));
+        var axis = math.normalize(math.float3(n2, 0, 1));
+
+        var offset = swingOffset * rand.NextFloat(0.75f, 1.25f);
+
+        var m1 = float4x4.Translate(origin);
+        var m2 = float4x4.AxisAngle(axis, angle);
+        var m3 = float4x4.Translate(math.float3(0, offset, 0));
+        return math.mul(math.mul(math.mul(xform, m1), m2), m3);
+
+        /*
         var rand = new Random(seed);
         rand.NextUInt4();
 
@@ -93,6 +161,7 @@ struct Audience
         var m2 = float4x4.AxisAngle(axis, angle);
         var m3 = float4x4.Translate(math.float3(0, offset, 0));
         return math.mul(math.mul(math.mul(xform, m1), m2), m3);
+        */
     }
 
     public Color GetStickColor(float2 pos, float time, uint seed)
@@ -100,6 +169,7 @@ struct Audience
         var rand = new Random(seed);
         rand.NextUInt4();
 
+        /*
         // Wave animation
         var wave = math.distance(pos, math.float2(0, 16));
         wave = math.sin(wave * 0.53f - time * 2.8f) * 0.5f + 0.5f;
@@ -109,6 +179,8 @@ struct Audience
         var br = wave * wave * 50 + 0.1f;
 
         return Color.HSVToRGB(hue, 1, br);
+        */
+        return Color.HSVToRGB(rand.NextFloat(), 1, 2);
     }
 
     #endregion
