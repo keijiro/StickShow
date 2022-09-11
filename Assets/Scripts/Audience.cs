@@ -169,7 +169,6 @@ struct Audience
         var rand = new Random(seed);
         rand.NextUInt4();
 
-        /*
         // Wave animation
         var wave = math.distance(pos, math.float2(0, 16));
         wave = math.sin(wave * 0.53f - time * 2.8f) * 0.5f + 0.5f;
@@ -179,8 +178,7 @@ struct Audience
         var br = wave * wave * 50 + 0.1f;
 
         return Color.HSVToRGB(hue, 1, br);
-        */
-        return Color.HSVToRGB(rand.NextFloat(), 1, 2);
+        //return Color.HSVToRGB(rand.NextFloat(), 1, 2);
     }
 
     #endregion

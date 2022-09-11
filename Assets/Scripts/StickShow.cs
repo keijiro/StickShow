@@ -62,6 +62,14 @@ sealed class StickShow : MonoBehaviour
         _colorBuffer.SetData(_colors);
         _material.SetBuffer("_InstanceColorBuffer", _colorBuffer);
 
+        var rparams = new RenderParams(_material);
+        Graphics.RenderMeshInstanced
+          (rparams, _mesh, 0, _matrices, _audience.TotalSeatCount);
+
+        /*
+        _colorBuffer.SetData(_colors);
+        _material.SetBuffer("_InstanceColorBuffer", _colorBuffer);
+
         var rparams = new RenderParams(_material) { matProps = _matProps };
         var (i, step) = (0, _audience.BlockSeatCount);
         for (var sx = 0; sx < _audience.blockCount.x; sx++)
@@ -73,6 +81,7 @@ sealed class StickShow : MonoBehaviour
                   (rparams, _mesh, 0, _matrices, step, i);
             }
         }
+        */
     }
 
     #endregion
